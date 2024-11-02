@@ -24,7 +24,8 @@ model Empresa {
   fecha_licencia   DateTime      @db.Date
   estado           EstadoEmpresa @default(ACTIVO)
   fecha_fundacion  DateTime      @db.Date
-  logo_url         String
+  logo_url         String?
+  logo_id          String? // add
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
 }
@@ -56,6 +57,7 @@ model Empleados {
   provincia           String
   distrito            String
   foto_url            String?
+  foto_id             String? // add
   estado              Estados           @default(ACTIVO)
   rol                 RolEmpleados
   terminal_id         String
@@ -90,6 +92,7 @@ model Conductores {
   provincia           String
   distrito            String
   foto_url            String?
+  foto_id             String? // add
   estado              Estados        @default(ACTIVO)
   licencia            String         @unique
   createdAt           DateTime       @default(now())
@@ -191,7 +194,7 @@ model Equipajes {
 }
 
 model Encomiendas {
-  id                    String            @id @default(uuid())
+  id String @id @default(uuid())
 
   emisor_nombres        String
   num_doc_emisor        String
@@ -210,23 +213,23 @@ model Encomiendas {
   terminal_origen_id    String
   terminal_destino_id   String
 
-  createdAt             DateTime          @default(now())
-  updatedAt             DateTime          @updatedAt
-  destino_terminal      UbicacionTerminal @relation("DestinoEncoRelation", fields: [terminal_destino_id], references: [id])
-  origen_terminal       UbicacionTerminal @relation("OrigenEncoRelation", fields: [terminal_origen_id], references: [id])
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  destino_terminal UbicacionTerminal @relation("DestinoEncoRelation", fields: [terminal_destino_id], references: [id])
+  origen_terminal  UbicacionTerminal @relation("OrigenEncoRelation", fields: [terminal_origen_id], references: [id])
 }
 
 model Boletos {
-  id          String    @id @default(uuid())
+  id String @id @default(uuid())
 
   pasajero_id String
   viaje_id    String
 
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  pasajero    Pasajeros @relation(fields: [pasajero_id], references: [id])
-  viaje       Viajes    @relation(fields: [viaje_id], references: [id])
+  pasajero Pasajeros @relation(fields: [pasajero_id], references: [id])
+  viaje    Viajes    @relation(fields: [viaje_id], references: [id])
 }
 
 enum EstadoEmpresa {

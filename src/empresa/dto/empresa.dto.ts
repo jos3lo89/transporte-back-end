@@ -58,7 +58,7 @@ export class RegistrarEmpresaDto {
   @IsString({ message: 'La fecha de fundación debe ser una cadena de texto.' })
   fecha_fundacion: string;
 
-  @IsNotEmpty({ message: 'El logo URL es obligatorio.' })
-  @IsString({ message: 'El logo URL debe ser una cadena de texto.' })
-  logo_url: string;
+  // @IsNotEmpty({ message: 'El logo URL es obligatorio.' })
+  // @IsString({ message: 'El logo URL debe ser una cadena de texto.' })
+  // logo_url: string;
 }

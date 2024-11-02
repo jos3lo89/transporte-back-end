@@ -12,9 +12,10 @@ import { ViajesModule } from './viajes/viajes.module';
 import { PasajerosModule } from './pasajeros/pasajeros.module';
 import { EquipajesModule } from './equipajes/equipajes.module';
 import { BoletosModule } from './boletos/boletos.module';
+import { SubirImgModule } from './subir-img/subir-img.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, EmpresaModule, TerminalesModule, CredencialesModule, ConductoresModule, VehiculosModule, RutasModule, ViajesModule, PasajerosModule, EquipajesModule, BoletosModule],
+  imports: [AuthModule, UsersModule, EmpresaModule, TerminalesModule, CredencialesModule, ConductoresModule, VehiculosModule, RutasModule, ViajesModule, PasajerosModule, EquipajesModule, BoletosModule, SubirImgModule],
   controllers: [],
   providers: [PrismaService],
 })

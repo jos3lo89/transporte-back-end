@@ -14,9 +14,9 @@ export class EmpresaController {
     return this.empresaService.registro(body);
   }
 
-  @Get(":ruc")
+  @Get(':ruc')
   @Auth(Role.ADMINISTRADOR, Role.VENDEDOR)
-  datosEmpresa(@Param("ruc") param: string) {
+  datosEmpresa(@Param('ruc') param: string) {
     return this.empresaService.datosEmpresa(param);
   }
 }
