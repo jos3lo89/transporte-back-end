@@ -1,0 +1,12 @@
+export enum Conbustibles {
+  GASOLINA = 'GASOLINA',
+  DIESEL = 'DIESEL',
+  HIBRIDO = 'HIBRIDO',
+  ELECTRICO = 'ELECTRICO',
+  GLP = 'GLP',
+}
+
+export enum TiposServicio {
+  TRANSPORTE_MIXTO = 'TRANSPORTE_MIXTO',
+  SOLO_ENCOMIENDAS = 'SOLO_ENCOMIENDAS',
+}

@@ -1,0 +1,282 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Empresa {
+  id               String        @id @default(uuid())
+  nombre_comercial String
+  razon_social     String
+  ruc              String        @unique
+  direccion        String
+  departamento     String
+  provincia        String
+  distrito         String
+  telefono         String
+  email            String        @unique
+  sitio_web        String?
+  tipo_empresa     String
+  licencia_mtc     String        @unique
+  fecha_licencia   DateTime      @db.Date
+  estado           EstadoEmpresa @default(ACTIVO)
+  fecha_fundacion  DateTime      @db.Date
+  logo_url         String
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+}
+
+model UbicacionTerminal {
+  id               String        @id @default(uuid())
+  ciudad           Ciudades      @unique
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  empleado         Empleados[]
+  encomiedaDestino Encomiendas[] @relation("DestinoEncoRelation")
+  encomiedaOrigen  Encomiendas[] @relation("OrigenEncoRelation")
+  rutasDestino     Rutas[]       @relation("DestinoRelation")
+  rutasOrigen      Rutas[]       @relation("OrigenRelation")
+}
+
+model Empleados {
+  id                  String            @id @default(uuid())
+  nombres             String
+  apellidos           String
+  tipo_documento      TiposDocumento
+  num_documento       String            @unique
+  genero              Generos
+  fecha_nacimiento    DateTime          @db.Date
+  celular             Int
+  email               String            @unique
+  direccion_domicilio String
+  departamento        String
+  provincia           String
+  distrito            String
+  foto_url            String?
+  estado              Estados           @default(ACTIVO)
+  rol                 RolEmpleados
+  terminal_id         String
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  credencial          Credenciales?
+  terminal            UbicacionTerminal @relation(fields: [terminal_id], references: [id])
+}
+
+model Credenciales {
+  id          String    @id @default(uuid())
+  usuario     String    @unique
+  clave       String
+  empleado_id String    @unique
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  empleado    Empleados @relation(fields: [empleado_id], references: [id], onDelete: Cascade)
+}
+
+model Conductores {
+  id                  String         @id @default(uuid())
+  nombres             String
+  apellidos           String
+  tipo_documento      TiposDocumento
+  num_documento       String         @unique
+  genero              Generos
+  fecha_nacimiento    DateTime       @db.Date
+  celular             String
+  email               String         @unique
+  direccion_domicilio String
+  departamento        String
+  provincia           String
+  distrito            String
+  foto_url            String?
+  estado              Estados        @default(ACTIVO)
+  licencia            String         @unique
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  vehiculo Vehiculos?
+  viajes   Viajes[]
+}
+
+model Vehiculos {
+  id                     String        @id @default(uuid())
+  tarjeta_de_circulacion String        @unique
+  numero_de_placa        String        @unique
+  marca                  String
+  modelo                 String
+  annio_de_fabricacion   Int
+  tipo_combustible       Conbustibles
+  color                  String
+  numero_motor           String        @unique
+  cantidad_ruedas        Int
+  total_asientos         Int
+  total_pasajeros        Int
+  peso_seco              Int
+  peso_bruto             Int
+  tipo_servicio          TiposServicio
+  estado                 Estados       @default(ACTIVO)
+  conductor_id           String        @unique
+
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  conductor Conductores @relation(fields: [conductor_id], references: [id])
+  viaje     Viajes[]
+}
+
+model Rutas {
+  id           String            @id @default(uuid())
+  duracion     Int
+  distancia_km Decimal           @db.Decimal(5, 2)
+  origen_id    String
+  destino_id   String
+  destino      UbicacionTerminal @relation("DestinoRelation", fields: [destino_id], references: [id], onDelete: Cascade)
+  origen       UbicacionTerminal @relation("OrigenRelation", fields: [origen_id], references: [id], onDelete: Cascade)
+  updatedAt    DateTime          @updatedAt
+  createdAt    DateTime          @default(now())
+  viajes       Viajes[]
+
+  @@unique([origen_id, destino_id])
+}
+
+model Viajes {
+  id String @id @default(uuid())
+
+  fecha  DateTime
+  precio Int
+
+  ruta_id      String
+  vehiculo_id  String
+  conductor_id String
+
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  conductor Conductores @relation(fields: [conductor_id], references: [id])
+  ruta      Rutas       @relation(fields: [ruta_id], references: [id])
+  vehiculo  Vehiculos   @relation(fields: [vehiculo_id], references: [id])
+
+  pasajeros Pasajeros[]
+  boletos   Boletos[]
+}
+
+model Pasajeros {
+  id String @id @default(uuid())
+
+  nombres        String
+  apellidos      String
+  tipo_documento TiposDocumento
+  num_documento  String
+  destino        Ciudades
+  num_asiento    Int
+
+  viaje_id String
+
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  boleto    Boletos[]
+  equipaje  Equipajes[]
+  viaje     Viajes      @relation(fields: [viaje_id], references: [id])
+}
+
+model Equipajes {
+  id String @id @default(uuid())
+
+  descripcion String
+  peso_kilo   Int
+  pasajero_id String
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  pasajero  Pasajeros @relation(fields: [pasajero_id], references: [id])
+}
+
+model Encomiendas {
+  id                    String            @id @default(uuid())
+
+  emisor_nombres        String
+  num_doc_emisor        String
+  num_telefono_emisor   String
+  receptor_nombres      String
+  num_doc_receptor      String
+  num_telefono_receptor String
+  fecha_hora_envio      DateTime
+  tipo                  TipoEncomienda
+  codigo_recogida       Int
+  peso_kilos            Int
+  descripcion           String
+  precio_unidad         Int
+  precio_total          Int
+  cantidad              Int
+  terminal_origen_id    String
+  terminal_destino_id   String
+
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  destino_terminal      UbicacionTerminal @relation("DestinoEncoRelation", fields: [terminal_destino_id], references: [id])
+  origen_terminal       UbicacionTerminal @relation("OrigenEncoRelation", fields: [terminal_origen_id], references: [id])
+}
+
+model Boletos {
+  id          String    @id @default(uuid())
+
+  pasajero_id String
+  viaje_id    String
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  pasajero    Pasajeros @relation(fields: [pasajero_id], references: [id])
+  viaje       Viajes    @relation(fields: [viaje_id], references: [id])
+}
+
+enum EstadoEmpresa {
+  ACTIVO
+  INACTIVO
+}
+
+enum Ciudades {
+  Andahuaylas
+  Abancay
+  Ayacucho
+}
+
+enum RolEmpleados {
+  VENDEDOR
+  ADMINISTRADOR
+}
+
+enum TiposDocumento {
+  DNI
+  Pasaporte
+}
+
+enum Generos {
+  MASCULINO
+  FEMENINO
+}
+
+enum Estados {
+  ACTIVO
+  INACTIVO
+}
+
+enum TiposServicio {
+  TRANSPORTE_MIXTO
+  SOLO_ENCOMIENDAS
+}
+
+enum Conbustibles {
+  GASOLINA
+  DIESEL
+  HIBRIDO
+  ELECTRICO
+  GLP
+}
+
+enum TipoEncomienda {
+  NORMAL
+  FRAGIL
+  RIGIDO
+  PELIGROSO
+  PERECEDERO
+}

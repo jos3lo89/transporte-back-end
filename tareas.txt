@@ -1,0 +1,8 @@
+tareas viernes
+- registro de ubicacion de terminales
+- registro de empleados
+- registro de credenciales
+- login jwt + hash + middleware + guards de endpoints
+- todo con guards
+- empresa registra - datos por ruc
+- coductores -registro
