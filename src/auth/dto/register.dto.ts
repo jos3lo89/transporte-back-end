@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
 export class RegisterDto {
   @IsNotEmpty({ message: 'Los nombres no pueden estar vacíos' })
@@ -26,8 +26,8 @@ export class RegisterDto {
   fecha_nacimiento: string;
 
   @IsNotEmpty({ message: 'El número de celular no puede estar vacío' })
-  @IsNumber({}, { message: 'El número de celular debe ser un número' })
-  celular: number;
+  @IsString({ message: 'El número de celular debe ser de caracteres' })
+  celular: string;
 
   @IsNotEmpty({ message: 'El correo electrónico no puede estar vacío' })
   @IsString({ message: 'El correo electrónico debe ser una cadena de texto' })
@@ -38,25 +38,9 @@ export class RegisterDto {
   @IsString({ message: 'La dirección de domicilio debe ser una cadena de texto' })
   direccion_domicilio: string;
 
-  @IsNotEmpty({ message: 'El departamento no puede estar vacío' })
-  @IsString({ message: 'El departamento debe ser una cadena de texto' })
-  departamento: string;
-
-  @IsNotEmpty({ message: 'La provincia no puede estar vacía' })
-  @IsString({ message: 'La provincia debe ser una cadena de texto' })
-  provincia: string;
-
-  @IsNotEmpty({ message: 'El distrito no puede estar vacío' })
-  @IsString({ message: 'El distrito debe ser una cadena de texto' })
-  distrito: string;
-
-  @IsNotEmpty({ message: 'La URL de la foto no puede estar vacía' })
-  @IsString({ message: 'La URL de la foto debe ser una cadena de texto' })
-  foto_url: string;
-
   @IsNotEmpty({ message: 'El rol no puede estar vacío' })
-  @IsEnum(['VENDEDOR', 'ADMINISTRADOR'], { message: 'El rol debe ser "VENDEDOR" o "ADMINISTRADOR"' })
-  rol: 'VENDEDOR' | 'ADMINISTRADOR';
+  @IsEnum(['GERENTE', 'BOLETERO', 'ENCOMENDERO'], { message: 'El rol debe ser "VENDEDOR" o "ADMINISTRADOR"' })
+  rol: 'GERENTE' | 'BOLETERO' | 'ENCOMENDERO';
 
   @IsNotEmpty({ message: 'El id de terminal no puede estar vacío' })
   @IsString({ message: 'El id de terminal debe ser una cadena de texto' })

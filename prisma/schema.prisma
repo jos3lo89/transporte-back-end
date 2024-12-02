@@ -25,9 +25,9 @@ model Empresa {
   estado           EstadoEmpresa @default(ACTIVO)
   fecha_fundacion  DateTime      @db.Date
   logo_url         String?
-  logo_id          String? // add
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
+  logo_id          String?
 }
 
 model UbicacionTerminal {
@@ -50,19 +50,16 @@ model Empleados {
   num_documento       String            @unique
   genero              Generos
   fecha_nacimiento    DateTime          @db.Date
-  celular             Int
+  celular             String
   email               String            @unique
   direccion_domicilio String
-  departamento        String
-  provincia           String
-  distrito            String
   foto_url            String?
-  foto_id             String? // add
   estado              Estados           @default(ACTIVO)
   rol                 RolEmpleados
   terminal_id         String
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
+  foto_id             String?
   credencial          Credenciales?
   terminal            UbicacionTerminal @relation(fields: [terminal_id], references: [id])
 }
@@ -88,18 +85,14 @@ model Conductores {
   celular             String
   email               String         @unique
   direccion_domicilio String
-  departamento        String
-  provincia           String
-  distrito            String
   foto_url            String?
-  foto_id             String? // add
   estado              Estados        @default(ACTIVO)
   licencia            String         @unique
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
-
-  vehiculo Vehiculos?
-  viajes   Viajes[]
+  foto_id             String?
+  vehiculo            Vehiculos?
+  viajes              Viajes[]
 }
 
 model Vehiculos {
@@ -120,11 +113,10 @@ model Vehiculos {
   tipo_servicio          TiposServicio
   estado                 Estados       @default(ACTIVO)
   conductor_id           String        @unique
-
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  conductor Conductores @relation(fields: [conductor_id], references: [id])
-  viaje     Viajes[]
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
+  conductor              Conductores   @relation(fields: [conductor_id], references: [id])
+  viaje                  Viajes[]
 }
 
 model Rutas {
@@ -133,76 +125,78 @@ model Rutas {
   distancia_km Decimal           @db.Decimal(5, 2)
   origen_id    String
   destino_id   String
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
   destino      UbicacionTerminal @relation("DestinoRelation", fields: [destino_id], references: [id], onDelete: Cascade)
   origen       UbicacionTerminal @relation("OrigenRelation", fields: [origen_id], references: [id], onDelete: Cascade)
-  updatedAt    DateTime          @updatedAt
-  createdAt    DateTime          @default(now())
   viajes       Viajes[]
 
   @@unique([origen_id, destino_id])
 }
 
 model Viajes {
-  id String @id @default(uuid())
-
-  fecha  DateTime
-  precio Int
-
-  ruta_id      String
-  vehiculo_id  String
-  conductor_id String
-
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  conductor Conductores @relation(fields: [conductor_id], references: [id])
-  ruta      Rutas       @relation(fields: [ruta_id], references: [id])
-  vehiculo  Vehiculos   @relation(fields: [vehiculo_id], references: [id])
-
-  pasajeros Pasajeros[]
-  boletos   Boletos[]
+  id               String             @id @default(uuid())
+  fecha            DateTime
+  precio           Int
+  ruta_id          String
+  vehiculo_id      String
+  conductor_id     String
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  asientosVendidos AsientosVendidos[]
+  boletos          Boletos[]
+  pasajeros        Pasajeros[]
+  conductor        Conductores        @relation(fields: [conductor_id], references: [id])
+  ruta             Rutas              @relation(fields: [ruta_id], references: [id])
+  vehiculo         Vehiculos          @relation(fields: [vehiculo_id], references: [id])
 }
 
 model Pasajeros {
-  id String @id @default(uuid())
+  id               String             @id @default(uuid())
+  nombres          String
+  apellidos        String
+  tipo_documento   TiposDocumento
+  num_documento    String
+  destino          Ciudades
+  num_asiento      Int
+  viaje_id         String
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  asientosVendidos AsientosVendidos[]
+  boleto           Boletos[]
+  equipaje         Equipajes[]
+  viaje            Viajes             @relation(fields: [viaje_id], references: [id])
+}
 
-  nombres        String
-  apellidos      String
-  tipo_documento TiposDocumento
-  num_documento  String
-  destino        Ciudades
-  num_asiento    Int
+model AsientosVendidos {
+  id          String    @id @default(uuid())
+  num_asiento Int
+  pasajero_id String
+  viaje_id    String
+  pasajero    Pasajeros @relation(fields: [pasajero_id], references: [id])
+  viaje       Viajes    @relation(fields: [viaje_id], references: [id])
 
-  viaje_id String
-
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  boleto    Boletos[]
-  equipaje  Equipajes[]
-  viaje     Viajes      @relation(fields: [viaje_id], references: [id])
+  @@unique([num_asiento, viaje_id])
 }
 
 model Equipajes {
-  id String @id @default(uuid())
-
+  id          String    @id @default(uuid())
+  pasajero_id String
   descripcion String
   peso_kilo   Int
-  pasajero_id String
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  pasajero  Pasajeros @relation(fields: [pasajero_id], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  pasajero    Pasajeros @relation(fields: [pasajero_id], references: [id])
 }
 
 model Encomiendas {
-  id String @id @default(uuid())
-
+  id                    String            @id @default(uuid())
   emisor_nombres        String
   num_doc_emisor        String
   num_telefono_emisor   String
   receptor_nombres      String
   num_doc_receptor      String
   num_telefono_receptor String
-  fecha_hora_envio      DateTime
   tipo                  TipoEncomienda
   codigo_recogida       Int
   peso_kilos            Int
@@ -212,24 +206,21 @@ model Encomiendas {
   cantidad              Int
   terminal_origen_id    String
   terminal_destino_id   String
-
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  destino_terminal UbicacionTerminal @relation("DestinoEncoRelation", fields: [terminal_destino_id], references: [id])
-  origen_terminal  UbicacionTerminal @relation("OrigenEncoRelation", fields: [terminal_origen_id], references: [id])
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  fecha_hora_envio      DateTime
+  destino_terminal      UbicacionTerminal @relation("DestinoEncoRelation", fields: [terminal_destino_id], references: [id])
+  origen_terminal       UbicacionTerminal @relation("OrigenEncoRelation", fields: [terminal_origen_id], references: [id])
 }
 
 model Boletos {
-  id String @id @default(uuid())
-
+  id          String    @id @default(uuid())
   pasajero_id String
   viaje_id    String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  pasajero Pasajeros @relation(fields: [pasajero_id], references: [id])
-  viaje    Viajes    @relation(fields: [viaje_id], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  pasajero    Pasajeros @relation(fields: [pasajero_id], references: [id])
+  viaje       Viajes    @relation(fields: [viaje_id], references: [id])
 }
 
 enum EstadoEmpresa {
@@ -244,8 +235,9 @@ enum Ciudades {
 }
 
 enum RolEmpleados {
-  VENDEDOR
-  ADMINISTRADOR
+  GERENTE
+  BOLETERO
+  ENCOMENDERO
 }
 
 enum TiposDocumento {

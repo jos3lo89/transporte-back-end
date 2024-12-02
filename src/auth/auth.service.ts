@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
-import { LoginDto } from './dto/login.dto';
-import { UsersService } from 'src/users/users.service';
-import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from '@auth/dto/login.dto';
+import { UsersService } from '@modules/users/users.service';
+import { RegisterDto } from '@auth/dto/register.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
@@ -51,7 +51,7 @@ export class AuthService {
     }
   }
 
-  async register(data: RegisterDto) {
-    return await this.userService.create(data);
+  async register(data: RegisterDto, file: Express.Multer.File) {
+    return await this.userService.create(data, file);
   }
 }

@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { UsersService } from 'src/users/users.service';
-import { CredencialesService } from 'src/credenciales/credenciales.service';
 import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from './constants/jwt.constant';
+import { PrismaService } from '@database/prisma/prisma.service';
+import { UsersService } from '@modules/users/users.service';
+import { CredencialesService } from '@modules/credenciales/credenciales.service';
+import { jwtConstants } from '@auth/constants/jwt.constant';
+import { CloudinaryService } from '@src/common/libs/cloudinary/cloudinary.service';
 
 @Module({
   imports: [
@@ -18,6 +19,6 @@ import { jwtConstants } from './constants/jwt.constant';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, PrismaService, UsersService, CredencialesService],
+  providers: [AuthService, PrismaService, UsersService, CredencialesService, CloudinaryService],
 })
 export class AuthModule {}
