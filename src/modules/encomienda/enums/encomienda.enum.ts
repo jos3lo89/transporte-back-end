@@ -1,0 +1,7 @@
+export enum TipoEncomienda {
+  NORMAL = 'NORMAL',
+  FRAGIL = 'FRAGIL',
+  RIGIDO = 'RIGIDO',
+  PELIGROSO = 'PELIGROSO',
+  PERECEDERO = 'PERECEDERO',
+}

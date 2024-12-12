@@ -34,6 +34,16 @@ export class PasajerosService {
         },
       });
 
+      if (createPasajeroDto.peso_equipaje && createPasajeroDto.descripcion_equipaje) {
+        await this.prismaService.equipajes.create({
+          data: {
+            descripcion: createPasajeroDto.descripcion_equipaje,
+            peso_kilo: createPasajeroDto.peso_equipaje,
+            pasajero_id: nuevoPasajero.id,
+          },
+        });
+      }
+
       await this.prismaService.asientosVendidos.create({
         data: {
           num_asiento: nuevoPasajero.num_asiento,
@@ -106,15 +116,40 @@ export class PasajerosService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} pasajero`;
-  }
+  async getDetallesAsiento(numAsiento: string, idViaje: string) {
+    try {
+      const res = await this.prismaService.asientosVendidos.findFirst({
+        where: {
+          num_asiento: Number(numAsiento),
+          viaje_id: idViaje,
+        },
+        include: {
+          pasajero: {
+            include: {
+              equipaje: true,
+            },
+          },
+          viaje: {
+            include: {
+              ruta: {
+                include: {
+                  destino: true,
+                  origen: true,
+                },
+              },
+            },
+          },
+        },
+      });
 
-  update(id: number, updatePasajeroDto: UpdatePasajeroDto) {
-    return `This action updates a #${id} pasajero`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} pasajero`;
+      return res;
+    } catch (error) {
+      console.log(error);
+      if (error instanceof PrismaClientKnownRequestError) {
+        throw new HttpException('Error al buscar el asiento', HttpStatus.BAD_REQUEST);
+      } else {
+        throw new HttpException('Error interno del servidor', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
   }
 }

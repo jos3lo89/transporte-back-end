@@ -1,7 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { PasajerosService } from './pasajeros.service';
 import { CreatePasajeroDto } from './dto/create-pasajero.dto';
-import { UpdatePasajeroDto } from './dto/update-pasajero.dto';
 import { Auth } from '@auth/decorators/auth.decorator';
 import { Role } from '@auth/enums/rol.enum';
 
@@ -21,26 +20,16 @@ export class PasajerosController {
     return this.pasajerosService.findAll();
   }
 
+  @Get('detalles/:numAsiento/:idViaje')
+  getDetallesDeAsiento(@Param('numAsiento') numAsiento: string, @Param('idViaje') idViaje: string) {
+    return this.pasajerosService.getDetallesAsiento(numAsiento, idViaje);
+  }
+
   /* asientos manejo */
 
   @Get('viaje/:id')
   @Auth(Role.GERENTE, Role.BOLETERO)
   traerVaijePorId(@Param('id') param: string) {
     return this.pasajerosService.traerVaijePorId(param);
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.pasajerosService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePasajeroDto: UpdatePasajeroDto) {
-    return this.pasajerosService.update(+id, updatePasajeroDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.pasajerosService.remove(+id);
   }
 }

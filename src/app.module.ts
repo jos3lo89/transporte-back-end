@@ -15,6 +15,8 @@ import { BoletosModule } from '@modules/boletos/boletos.module';
 import { SubirImgModule } from '@libs/subir-img/subir-img.module';
 import { CloudinaryModule } from '@libs/cloudinary/cloudinary.module';
 import { ReniecModule } from './modules/reniec/reniec.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { EncomiendaModule } from './modules/encomienda/encomienda.module';
 
 @Module({
   imports: [
@@ -33,6 +35,8 @@ import { ReniecModule } from './modules/reniec/reniec.module';
     SubirImgModule,
     CloudinaryModule,
     ReniecModule,
+    DashboardModule,
+    EncomiendaModule,
   ],
   controllers: [],
   providers: [PrismaService],

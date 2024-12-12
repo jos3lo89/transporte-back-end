@@ -15,7 +15,7 @@ export class TerminalesController {
   }
 
   @Get()
-  @Auth(Role.GERENTE)
+  @Auth(Role.GERENTE, Role.ENCOMENDERO)
   listaTerminales() {
     return this.terminalService.listaTerminales();
   }

@@ -198,19 +198,27 @@ model Encomiendas {
   num_doc_receptor      String
   num_telefono_receptor String
   tipo                  TipoEncomienda
-  codigo_recogida       Int
+  codigo_recogida       String
   peso_kilos            Int
   descripcion           String
-  precio_unidad         Int
+  // precio_unidad         Int
   precio_total          Int
-  cantidad              Int
+  estado EstadoEncomienda @default(RECIBIDO)
+  // cantidad              Int
   terminal_origen_id    String
   terminal_destino_id   String
   createdAt             DateTime          @default(now())
   updatedAt             DateTime          @updatedAt
-  fecha_hora_envio      DateTime
+  fecha_hora_envio      DateTime @default(now())
   destino_terminal      UbicacionTerminal @relation("DestinoEncoRelation", fields: [terminal_destino_id], references: [id])
   origen_terminal       UbicacionTerminal @relation("OrigenEncoRelation", fields: [terminal_origen_id], references: [id])
+}
+
+enum EstadoEncomienda {
+  RECIBIDO
+  EN_RUTA
+  EN_DESTINO
+  ENTREGADO
 }
 
 model Boletos {

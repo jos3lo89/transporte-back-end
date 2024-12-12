@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsEnum, IsInt, Min, Max, Length } from 'class-validator';
+import { IsNotEmpty, IsString, IsEnum, IsInt, Min, Max, Length, IsOptional, IsNumber } from 'class-validator';
 
 export enum TiposDocumento {
   DNI = 'DNI',
@@ -42,4 +42,12 @@ export class CreatePasajeroDto {
   @IsNotEmpty({ message: 'El ID del viaje es obligatorio.' })
   @IsString({ message: 'El ID del viaje debe ser una cadena de texto.' })
   viaje_id: string;
+
+  @IsOptional()
+  @IsString({ message: 'La descripción debe ser una cadena de texto.' })
+  descripcion_equipaje: string;
+
+  @IsOptional()
+  @IsNumber({}, { message: 'EL peso debe ser un número' })
+  peso_equipaje: number;
 }
