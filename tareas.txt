@@ -1,7 +1,0 @@
-tareas viernes
-
-
--- el viaje  estados
-en espera
-en curso
-terminado

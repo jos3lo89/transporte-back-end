@@ -3,20 +3,28 @@ import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class CredencialesService {
+  email: string = '';
+  password: string = '';
+
   private transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
     secure: false,
     auth: {
-      user: 'pma.mode.18@gmail.com',
-      pass: 'dcqy uinx pcvm onun', // mandar a las varialbles de entorno
+      user: this.email,
+      pass: this.password, // mandar a las varialbles de entorno
     },
   });
+
+  constructor() {
+    this.email = process.env.EMAIL;
+    this.password = process.env.PASSWORD;
+  }
 
   async sendMail(email: string, username: string, clave: string) {
     try {
       const info = await this.transporter.sendMail({
-        from: '"El apurimeño" pma.mode.18@gmail.com',
+        from: `"El apurimeño" ${this.email}`,
         to: email,
         subject: 'Credenciales de Acceso',
         html: `<div

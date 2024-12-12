@@ -11,9 +11,9 @@ const credentialsInary = {
 export class CloudinaryService {
   constructor() {
     cloudinary.config({
-      cloud_name: credentialsInary.CLOUDINARY_CLOUD_NAME,
-      api_key: credentialsInary.CLOUDINARY_API_KEY,
-      api_secret: credentialsInary.CLOUDINARY_API_SECRET,
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
     });
   }
 
