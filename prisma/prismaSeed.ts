@@ -1,20 +1,10 @@
-import {
-  PrismaClient,
-  EstadoEmpresa,
-  Ciudades,
-  RolEmpleados,
-  TiposDocumento,
-  Generos,
-  Estados,
-  TiposServicio,
-  Conbustibles,
-  TipoEncomienda,
-} from '@prisma/client';
+import { PrismaClient, EstadoEmpresa, Ciudades, RolEmpleados, TiposDocumento, Generos, Estados } from '@prisma/client';
+
+import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  // Semilla para Empresa
   await prisma.empresa.create({
     data: {
       nombre_comercial: 'El Apurimeño',
@@ -36,116 +26,40 @@ async function main() {
     },
   });
 
-  // Semilla para UbicacionTerminal
   await prisma.ubicacionTerminal.create({
     data: {
       ciudad: Ciudades.Andahuaylas,
     },
   });
 
-  // Semilla para Empleados
-  const terminal = await prisma.ubicacionTerminal.findFirst(); // Asume que tienes al menos un terminal
+  const terminal = await prisma.ubicacionTerminal.findFirst();
+
   await prisma.empleados.create({
     data: {
-      nombres: 'Jose Luis',
-      apellidos: 'Galindo Cardenas',
+      nombres: 'admin',
+      apellidos: 'admin',
       tipo_documento: TiposDocumento.DNI,
-      num_documento: '74843111',
+      num_documento: '12345678',
       genero: Generos.MASCULINO,
-      fecha_nacimiento: new Date('2001-01-18'),
-      celular: "916099300",
-      email: 'pma.mode.18@gmail.com',
-      direccion_domicilio: 'Jr. Tadeo leguis S/N',
+      fecha_nacimiento: new Date('2004-02-28'),
+      celular: '999123456',
+      email: 'admin@gmail.com',
+      direccion_domicilio: 'Jr. las fresias S/N',
       estado: Estados.ACTIVO,
       rol: RolEmpleados.GERENTE,
       terminal_id: terminal ? terminal.id : '',
     },
   });
 
-  // Semilla para Conductores
-  // await prisma.conductores.create({
-  //   data: {
-  //     nombres: 'Carlos',
-  //     apellidos: 'Gomez',
-  //     tipo_documento: TiposDocumento.DNI,
-  //     num_documento: '456789123',
-  //     genero: Generos.MASCULINO,
-  //     fecha_nacimiento: new Date('1985-04-22'),
-  //     celular: '912345678',
-  //     email: 'carlos.gomez@example.com',
-  //     direccion_domicilio: 'Av. Conductor 789',
-  //     licencia: 'LIC123456',
-  //     estado: Estados.ACTIVO,
-  //   },
-  // });
+  const user = await prisma.empleados.findFirst();
 
-  // Semilla para Vehiculos
-  const conductor = await prisma.conductores.findFirst(); // Asume que tienes al menos un conductor
-  await prisma.vehiculos.create({
+  await prisma.credenciales.create({
     data: {
-      tarjeta_de_circulacion: 'TC123456',
-      numero_de_placa: 'ABC-123',
-      marca: 'Toyota',
-      modelo: 'Corolla',
-      annio_de_fabricacion: 2015,
-      tipo_combustible: Conbustibles.GASOLINA,
-      color: 'Negro',
-      numero_motor: 'NM123456',
-      cantidad_ruedas: 4,
-      total_asientos: 4,
-      total_pasajeros: 4,
-      peso_seco: 1200,
-      peso_bruto: 1500,
-      tipo_servicio: TiposServicio.TRANSPORTE_MIXTO,
-      estado: Estados.ACTIVO,
-      conductor_id: conductor ? conductor.id : '',
+      clave: await bcrypt.hash(user.num_documento, 10),
+      usuario: user.num_documento,
+      empleado_id: user.id,
     },
   });
-
-  // Semilla para Rutas
-  const terminalDestino = await prisma.ubicacionTerminal.findFirst({ where: { ciudad: Ciudades.Ayacucho } });
-  const terminalOrigen = await prisma.ubicacionTerminal.findFirst({ where: { ciudad: Ciudades.Andahuaylas } });
-  if (terminalOrigen && terminalDestino) {
-    await prisma.rutas.create({
-      data: {
-        duracion: 120,
-        distancia_km: 150.75,
-        origen_id: terminalOrigen.id,
-        destino_id: terminalDestino.id,
-      },
-    });
-  }
-
-  // Semilla para Viajes
-  const ruta = await prisma.rutas.findFirst();
-  const vehiculo = await prisma.vehiculos.findFirst();
-  if (ruta && vehiculo && conductor) {
-    await prisma.viajes.create({
-      data: {
-        fecha: new Date('2024-11-10'),
-        precio: 100,
-        ruta_id: ruta.id,
-        vehiculo_id: vehiculo.id,
-        conductor_id: conductor.id,
-      },
-    });
-  }
-
-  // Semilla para Pasajeros
-  const viaje = await prisma.viajes.findFirst();
-  if (viaje) {
-    await prisma.pasajeros.create({
-      data: {
-        nombres: 'Pedro',
-        apellidos: 'Lopez',
-        tipo_documento: TiposDocumento.DNI,
-        num_documento: '12345678',
-        destino: Ciudades.Ayacucho,
-        num_asiento: 1,
-        viaje_id: viaje.id,
-      },
-    });
-  }
 
   console.log('Seeding completed!');
 }
